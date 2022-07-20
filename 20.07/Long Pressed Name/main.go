@@ -3,8 +3,8 @@ package main
 import "fmt"
 
 func main() {
-	name := "alex"
-	typed := "aaleex"
+	name := "saeed"
+	typed := "ssaaedd"
 	checkedLetter := make([]string, 0)
 	checker := true
 	nameCounter := 0
@@ -27,7 +27,6 @@ func main() {
 		}
 
 		if checker == false {
-			fmt.Println("Not the same name!")
 			break
 		}
 		for l := 0; l < len(typed); l++ {
@@ -45,4 +44,5 @@ func main() {
 		}
 
 	}
+	fmt.Println("Output:", checker)
 }
