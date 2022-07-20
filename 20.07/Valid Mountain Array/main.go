@@ -3,14 +3,15 @@ package main
 import "fmt"
 
 func main() {
-	arr := [...]int{1, 2, 3, 5, 4, 2, 1}
+	arr := [...]int{2, 1}
 	leftSubArray := [len(arr) / 2]int{}
 	rightSubArray := [len(arr) / 2]int{}
 	var peak int
 
 	validMountainArray := true
-
-	if len(arr)%2 == 0 {
+	if len(arr) < 3 {
+		validMountainArray = false
+	} else if len(arr)%2 == 0 {
 		for i := 0; i < len(arr); i++ {
 			if i <= (len(arr)/2)-1 {
 				leftSubArray[i] = arr[i]
