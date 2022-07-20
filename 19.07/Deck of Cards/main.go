@@ -3,10 +3,10 @@ package main
 import "fmt"
 
 func main() {
-	deck := []int{1, 2, 3, 4, 4, 3, 2, 1}
+	deck := []int{1, 2, 3, 4, 4, 4, 3, 2}
 
 	var exist bool
-	var result bool
+	result := true
 	sizeX := 0
 	indexes := make([]int, 0, len(deck))
 
@@ -36,10 +36,9 @@ func main() {
 			sizeX = len(group)
 		}
 
-		if len(group) > 0 && len(group) != sizeX {
+		if len(group) != 0 && len(group) != sizeX {
 			result = false
-		} else {
-			result = true
+
 		}
 
 		if len(group) > 0 {

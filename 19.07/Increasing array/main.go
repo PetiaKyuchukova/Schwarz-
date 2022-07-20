@@ -6,12 +6,12 @@ import (
 
 func main() {
 
-	nums := [...]int{1, 2, 10, 5, 7}
+	nums := [...]int{1, 1, 1}
 	canBeIncreased := true
 
 	for i := 0; i < len(nums); i++ {
-		checkForIncreasing := [5]int{}
-		result := make([]int, 0, 4)
+		checkForIncreasing := [len(nums)]int{}
+		result := make([]int, 0, len(nums))
 
 		for j := 0; j < len(checkForIncreasing); j++ {
 			if j == i {
