@@ -30,7 +30,8 @@ func main() {
 	// if err != nil {
 	// 	panic(err.Error())
 	// }
+	// //aut := models.Author{ID: 6, Name: "NewNAme", Biography: "NewBiography"}
 
-	//fmt.Println(DeleteBook(db, 4))
+	// fmt.Println()
 
 }

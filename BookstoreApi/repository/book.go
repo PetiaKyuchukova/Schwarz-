@@ -30,6 +30,13 @@ func (bs *Storage) GetBookByID(id int) models.Book {
 	bs.db.Where("id = ?", id).Find(&book)
 	return book
 }
+func (bs *Storage) GetBooksByAuthorId(author_id int) []models.Book {
+	books := []models.Book{}
+
+	bs.db.Where("books.author_id  = ?", author_id).Find(&books).Scan(&books)
+
+	return books
+}
 func (bs *Storage) UpdateBookPrice(id int, price float32) models.Result {
 	result := models.Result{}
 
