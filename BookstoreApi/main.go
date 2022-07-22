@@ -30,8 +30,9 @@ func main() {
 	// if err != nil {
 	// 	panic(err.Error())
 	// }
-	// //aut := models.Author{ID: 6, Name: "NewNAme", Biography: "NewBiography"}
+	// // //aut := models.Author{ID: 6, Name: "NewNAme", Biography: "NewBiography"}
 
 	// fmt.Println()
+	// CreateCategory(db, "categ3")
 
 }

@@ -2,11 +2,21 @@ package repository
 
 import (
 	"bookstore/models"
+	"log"
 )
 
 func (cs *Storage) CreateCategory(name string) models.Category {
+
 	category := models.Category{Name: name}
-	cs.db.Create(category)
+	var exists bool
+	cs.db.Model(category).Select("count(*) > 0").Where("name = ?", name).Find(&exists)
+
+	if exists == false {
+		cs.db.Create(&category)
+	} else {
+		log.Print("Category already exists!")
+	}
+
 	return category
 }
 func (cs *Storage) GetAllCategories() []models.Category {
@@ -28,9 +38,7 @@ func (cs *Storage) GetAllCategories() []models.Category {
 }
 func (cs *Storage) GetCategoryByID(id int) models.Category {
 	category := models.Category{}
-
 	cs.db.Where("id = ?", id).Find(&category)
-	//cs.db.Where("books.category_id  = ?", category.ID).Find(&category.Books)
 
 	return category
 }
@@ -46,4 +54,11 @@ func (cs *Storage) DeleteCategory(id int) models.Category {
 
 	return category
 
+}
+func (cs *Storage) GetCategoryOfTheBook(book models.Book) models.Category {
+	category := models.Category{}
+
+	cs.db.Where("categories.id  = ?", book.CategoryID).Find(&category).Scan(&category)
+
+	return category
 }

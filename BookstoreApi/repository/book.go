@@ -2,28 +2,28 @@ package repository
 
 import (
 	"bookstore/models"
+	"log"
 )
 
 func (bs *Storage) CreateBook(title string, author int, category int, price float32) {
-	bs.db.Create(models.Book{Title: title, AuthorID: uint(author), CategoryID: uint(category), Price: price})
+	var exists bool
+	book := models.Book{Title: title, AuthorID: uint(author), CategoryID: uint(category), Price: price}
+
+	bs.db.Model(book).Select("count(*) > 0").Where("title = ?", title).Find(&exists)
+
+	if exists == false {
+		bs.db.Create(&book)
+	} else {
+		log.Print("The book already exists!")
+	}
+
 }
-func (bs *Storage) GetAllBooks() []models.Result {
-	results := []models.Result{}
+func (bs *Storage) GetAllBooks() []models.Book {
 
 	books := []models.Book{}
 	bs.db.Find(&books)
 
-	for i := 0; i < len(books); i++ {
-		result := models.Result{}
-		result.Book = books[i]
-
-		bs.db.Where("authors.id  = ?", result.Book.AuthorID).Find(&result.Author).Scan(&result.Author)
-		bs.db.Where("categories.id  = ?", result.Book.CategoryID).Find(&result.Category).Scan(&result.Category)
-
-		results = append(results, result)
-	}
-
-	return results
+	return books
 }
 func (bs *Storage) GetBookByID(id int) models.Book {
 	book := models.Book{}
@@ -37,16 +37,13 @@ func (bs *Storage) GetBooksByAuthorId(author_id int) []models.Book {
 
 	return books
 }
-func (bs *Storage) UpdateBookPrice(id int, price float32) models.Result {
-	result := models.Result{}
+func (bs *Storage) UpdateBookPrice(id int, price float32) models.Book {
 
-	bs.GetBookByID(id)
+	book := bs.GetBookByID(id)
 
-	bs.db.Model(&result.Book).Update("price", price)
-	bs.db.Where("authors.id  = ?", result.Book.AuthorID).Find(&result.Author).Scan(&result.Author)
-	bs.db.Where("categories.id  = ?", result.Book.CategoryID).Find(&result.Category).Scan(&result.Category)
+	bs.db.Model(&book).Update("price", price)
 
-	return result
+	return book
 }
 func (bs *Storage) DeleteBook(id int) models.Book {
 	book := bs.GetBookByID(id)
@@ -54,4 +51,12 @@ func (bs *Storage) DeleteBook(id int) models.Book {
 	bs.db.Delete(&models.Book{}, id)
 	return book
 
+}
+func (bs *Storage) DeleteBooksInTheCategory(category_id int) {
+	book := models.Book{}
+	bs.db.Where("category_id = ?", category_id).Delete(&book)
+}
+func (bs *Storage) DeleteBooksOfTheAuthor(author_id int) {
+	book := models.Book{}
+	bs.db.Where("author_id = ?", author_id).Delete(&book)
 }
