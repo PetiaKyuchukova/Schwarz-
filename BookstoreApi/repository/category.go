@@ -2,28 +2,19 @@ package repository
 
 import (
 	"bookstore/models"
-
-	"github.com/jinzhu/gorm"
 )
 
-type CategoryStore struct {
-	db *gorm.DB
-}
-
-func NewCategoryStore(db *gorm.DB) *CategoryStore {
-	return &CategoryStore{db: db}
-}
-
-func (cs *CategoryStore) CreateCategory(name string) {
+func (cs *Storage) CreateCategory(name string) {
 	cs.db.Create(models.Category{Name: name})
 }
-func (cs *CategoryStore) GetAllCategories() []models.Category {
+func (cs *Storage) GetAllCategories() []models.Category {
 	categories := []models.Category{}
 
 	cs.db.Find(&categories)
 
 	for i := 0; i < len(categories); i++ {
 		book := []models.Book{}
+
 		books := cs.db.Where("books.category_id  = ?", categories[i].ID).Find(&book)
 		books.Scan(&book)
 
@@ -33,7 +24,7 @@ func (cs *CategoryStore) GetAllCategories() []models.Category {
 	return categories
 
 }
-func (cs *CategoryStore) GetCategoryByID(id int) models.Category {
+func (cs *Storage) GetCategoryByID(id int) models.Category {
 	category := models.Category{}
 
 	cs.db.Where("id = ?", id).Find(&category)
@@ -41,13 +32,13 @@ func (cs *CategoryStore) GetCategoryByID(id int) models.Category {
 
 	return category
 }
-func (cs *CategoryStore) UpdateCategory(name string, id int) models.Category {
+func (cs *Storage) UpdateCategory(name string, id int) models.Category {
 	category := cs.GetCategoryByID(id)
 	cs.db.Model(&category).Update("name", name)
 
 	return category
 }
-func (cs *CategoryStore) DeleteCategory(id int) models.Category {
+func (cs *Storage) DeleteCategory(id int) models.Category {
 	category := models.Category{}
 
 	cs.db.Where("id = ?", id).Find(&category)
