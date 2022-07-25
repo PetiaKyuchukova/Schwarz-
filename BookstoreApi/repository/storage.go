@@ -1,11 +1,18 @@
 package repository
 
-import "github.com/jinzhu/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type Storage struct {
-	db *gorm.DB
+	Db *gorm.DB
 }
 
-func NewStorage(db *gorm.DB) *Storage {
-	return &Storage{db: db}
+var myDB *gorm.DB
+
+func GetDB() *Storage {
+	return &Storage{Db: myDB}
+}
+func SetDB(dbToSet *gorm.DB) {
+	myDB = dbToSet
 }

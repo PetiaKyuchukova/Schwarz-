@@ -1,5 +1,15 @@
 package main
 
+import (
+	"bookstore/handlers"
+	"bookstore/repository"
+	"log"
+
+	"github.com/labstack/echo"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+)
+
 type Author struct {
 	ID        int `gorm:"primaryKey"`
 	Name      string
@@ -25,14 +35,23 @@ type Result struct {
 }
 
 func main() {
-	// dsn := "host=localhost user=postgres password= dbname=Bookstore port=5432 sslmode=disable TimeZone=Asia/Shanghai"
-	// db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	// if err != nil {
-	// 	panic(err.Error())
-	// }
-	// // //aut := models.Author{ID: 6, Name: "NewNAme", Biography: "NewBiography"}
 
-	// fmt.Println()
-	// CreateCategory(db, "categ3")
+	dsn := "host=localhost user=postgres password=0041129115 dbname=Bookstore port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatal(err)
+	}
 
+	repository.SetDB(db)
+
+	router := echo.New()
+
+	router.GET("/categories", handlers.GetAllCategories)
+	router.GET("/categories/:id", handlers.GetCategoryByID)
+	router.DELETE("/categories/:id", handlers.DeleteCategory)
+	router.POST("/categories", handlers.CreateCategory)
+
+	router.GET("/books", handlers.GetAllBooks)
+
+	router.Logger.Fatal(router.Start(":2000"))
 }

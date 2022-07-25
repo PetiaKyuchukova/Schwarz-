@@ -9,10 +9,10 @@ func (cs *Storage) CreateCategory(name string) models.Category {
 
 	category := models.Category{Name: name}
 	var exists bool
-	cs.db.Model(category).Select("count(*) > 0").Where("name = ?", name).Find(&exists)
+	cs.Db.Model(category).Select("count(*) > 0").Where("name = ?", name).Find(&exists)
 
 	if exists == false {
-		cs.db.Create(&category)
+		cs.Db.Create(&category)
 	} else {
 		log.Print("Category already exists!")
 	}
@@ -22,12 +22,12 @@ func (cs *Storage) CreateCategory(name string) models.Category {
 func (cs *Storage) GetAllCategories() []models.Category {
 	categories := []models.Category{}
 
-	cs.db.Find(&categories)
+	cs.Db.Find(&categories)
 
 	for i := 0; i < len(categories); i++ {
 		book := []models.Book{}
 
-		books := cs.db.Where("books.category_id  = ?", categories[i].ID).Find(&book)
+		books := cs.Db.Where("books.category_id  = ?", categories[i].ID).Find(&book)
 		books.Scan(&book)
 
 		categories[i].Books = append(categories[i].Books, book...)
@@ -38,19 +38,25 @@ func (cs *Storage) GetAllCategories() []models.Category {
 }
 func (cs *Storage) GetCategoryByID(id int) models.Category {
 	category := models.Category{}
-	cs.db.Where("id = ?", id).Find(&category)
+	cs.Db.Where("id = ?", id).Find(&category)
+
+	return category
+}
+func (cs *Storage) GetCategoryByName(name string) models.Category {
+	category := models.Category{}
+	cs.Db.Where("name = ?", name).Find(&category)
 
 	return category
 }
 func (cs *Storage) UpdateCategory(name string, id int) models.Category {
 	category := cs.GetCategoryByID(id)
-	cs.db.Model(&category).Update("name", name)
+	cs.Db.Model(&category).Update("name", name)
 
 	return category
 }
 func (cs *Storage) DeleteCategory(id int) models.Category {
 	category := cs.GetCategoryByID(id)
-	cs.db.Delete(&models.Category{}, id)
+	cs.Db.Delete(&models.Category{}, id)
 
 	return category
 
@@ -58,7 +64,7 @@ func (cs *Storage) DeleteCategory(id int) models.Category {
 func (cs *Storage) GetCategoryOfTheBook(book models.Book) models.Category {
 	category := models.Category{}
 
-	cs.db.Where("categories.id  = ?", book.CategoryID).Find(&category).Scan(&category)
+	cs.Db.Where("categories.id  = ?", book.CategoryID).Find(&category).Scan(&category)
 
 	return category
 }
