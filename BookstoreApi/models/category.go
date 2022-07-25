@@ -5,3 +5,6 @@ type Category struct {
 	Name  string `json:"name,omitempty"`
 	Books []Book `json:"books,omitempty"`
 }
+type Categories struct {
+	Categories []Category `json:"categories"`
+}

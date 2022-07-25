@@ -10,10 +10,22 @@ import (
 )
 
 func GetAllAuthors(c echo.Context) error {
+	var authors = models.Authors{}
 	myDB := repository.GetDB()
-	authors := myDB.GetAllAuthors()
+	authors.Authors = myDB.GetAllAuthors()
 
 	return c.JSON(http.StatusOK, authors)
+}
+func GetAuthorByID(c echo.Context) error {
+	myDB := repository.GetDB()
+
+	id, _ := strconv.Atoi(c.Param("id"))
+	author := myDB.GetAuthorById(id)
+	books := myDB.GetBooksByAuthorId(id)
+	author.Books = books
+
+	return c.JSON(http.StatusOK, author)
+
 }
 func CreateAuthor(c echo.Context) error {
 	myDB := repository.GetDB()
@@ -26,25 +38,6 @@ func CreateAuthor(c echo.Context) error {
 	myDB.CreateAuthor(newAuthor.Name, newAuthor.Biography)
 	newAuthor = myDB.GetAuthorByName(newAuthor.Name)
 	return c.JSON(http.StatusOK, newAuthor)
-
-}
-func GetAuthorByID(c echo.Context) error {
-	myDB := repository.GetDB()
-
-	id, _ := strconv.Atoi(c.Param("id"))
-	author := myDB.GetAuthorById(id)
-
-	return c.JSON(http.StatusOK, author)
-
-}
-func DeleteAuthor(c echo.Context) error {
-	myDB := repository.GetDB()
-
-	id, _ := strconv.Atoi(c.Param("id"))
-	myDB.DeleteBooksOfTheAuthor(id)
-	deletedAuthor := myDB.DeleteAuthor(id)
-
-	return c.JSON(http.StatusOK, deletedAuthor)
 
 }
 func PutAuthor(c echo.Context) error {
@@ -60,4 +53,14 @@ func PutAuthor(c echo.Context) error {
 	author := myDB.GetAuthorById(id)
 
 	return c.JSON(http.StatusOK, author)
+}
+func DeleteAuthor(c echo.Context) error {
+	myDB := repository.GetDB()
+
+	id, _ := strconv.Atoi(c.Param("id"))
+	myDB.DeleteBooksOfTheAuthor(id)
+	deletedAuthor := myDB.DeleteAuthor(id)
+
+	return c.JSON(http.StatusOK, deletedAuthor)
+
 }

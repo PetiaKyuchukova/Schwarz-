@@ -10,6 +10,8 @@ import (
 	"gorm.io/gorm"
 )
 
+var dsn = "host=localhost user=postgres password=0041129115 dbname=Bookstore port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+
 func main() {
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -28,7 +30,7 @@ func main() {
 
 	router.GET("/books", handlers.GetAllBooks)
 	router.GET("/books/:id", handlers.GetBookByID)
-	router.POST("/books", handlers.PostBook)
+	router.POST("/books", handlers.CreateBook)
 	router.PUT("/books/:id", handlers.PutBook)
 	router.DELETE("/books/:id", handlers.DeleteBook)
 

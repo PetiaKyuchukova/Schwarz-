@@ -21,7 +21,6 @@ func (cs *Storage) CreateCategory(name string) models.Category {
 }
 func (cs *Storage) GetAllCategories() []models.Category {
 	categories := []models.Category{}
-
 	cs.Db.Find(&categories)
 
 	for i := 0; i < len(categories); i++ {
@@ -48,6 +47,13 @@ func (cs *Storage) GetCategoryByName(name string) models.Category {
 
 	return category
 }
+func (cs *Storage) GetCategoryOfTheBook(book models.Book) models.Category {
+	category := models.Category{}
+
+	cs.Db.Where("categories.id  = ?", book.CategoryID).Find(&category).Scan(&category)
+
+	return category
+}
 func (cs *Storage) UpdateCategory(name string, id int) models.Category {
 	category := cs.GetCategoryByID(id)
 	cs.Db.Model(&category).Update("name", name)
@@ -60,11 +66,4 @@ func (cs *Storage) DeleteCategory(id int) models.Category {
 
 	return category
 
-}
-func (cs *Storage) GetCategoryOfTheBook(book models.Book) models.Category {
-	category := models.Category{}
-
-	cs.Db.Where("categories.id  = ?", book.CategoryID).Find(&category).Scan(&category)
-
-	return category
 }

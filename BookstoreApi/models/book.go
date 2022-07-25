@@ -14,3 +14,6 @@ type BookDetailInfo struct {
 	Category Category `json:"category"`
 	Price    float32  `json:"price"`
 }
+type Books struct {
+	Books []BookDetailInfo `json:"books"`
+}

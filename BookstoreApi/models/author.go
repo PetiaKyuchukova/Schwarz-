@@ -6,3 +6,6 @@ type Author struct {
 	Biography string `json:"biography,omitempty"`
 	Books     []Book `json:"books,omitempty"`
 }
+type Authors struct {
+	Authors []Author `json:"authors"`
+}
