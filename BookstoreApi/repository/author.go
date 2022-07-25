@@ -16,7 +16,6 @@ func (as *Storage) CreateAuthor(name string, biography string) models.Author {
 	} else {
 		log.Print("The author already exists!")
 	}
-	as.Db.Create(&author)
 
 	return author
 }
@@ -42,6 +41,17 @@ func (as *Storage) GetAuthorById(id int) models.Author {
 
 	return author
 }
+func (cs *Storage) GetAuthorByName(name string) models.Author {
+	author := models.Author{}
+	cs.Db.Where("name = ?", name).Find(&author)
+
+	return author
+}
+func (as *Storage) GetAuthorOfTheBook(book models.Book) models.Author {
+	author := models.Author{}
+	as.Db.Where("authors.id  = ?", book.AuthorID).Find(&author).Scan(&author)
+	return author
+}
 func (as *Storage) UpdateAuthor(updatedAuthor models.Author) models.Author {
 	author := as.GetAuthorById(updatedAuthor.ID)
 
@@ -54,10 +64,5 @@ func (as *Storage) DeleteAuthor(id int) models.Author {
 	author := as.GetAuthorById(id)
 	as.Db.Delete(&models.Author{}, id)
 
-	return author
-}
-func (as *Storage) GetAuthorOfTheBook(book models.Book) models.Author {
-	author := models.Author{}
-	as.Db.Where("authors.id  = ?", book.AuthorID).Find(&author).Scan(&author)
 	return author
 }

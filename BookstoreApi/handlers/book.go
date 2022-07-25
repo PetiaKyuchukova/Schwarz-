@@ -29,6 +29,3 @@ func GetAllBooks(c echo.Context) error {
 	return c.JSON(http.StatusOK, response)
 
 }
-func CreateBook(c echo.Context) error {
-
-}
