@@ -37,6 +37,19 @@ func (bs *Storage) GetBooksByAuthorId(author_id int) []models.Book {
 
 	return books
 }
+func (cs *Storage) GetBookByTitle(title string) models.Book {
+	book := models.Book{}
+	cs.Db.Where("title = ?", title).Find(&book)
+
+	return book
+}
+func (cs *Storage) SetBookDetailInfo(book models.Book) models.BookDetailInfo {
+	author := cs.GetAuthorOfTheBook(book)
+	category := cs.GetCategoryOfTheBook(book)
+	bookDetailInfo := models.BookDetailInfo{ID: book.ID, Title: book.Title, Author: author, Category: category, Price: book.Price}
+
+	return bookDetailInfo
+}
 func (bs *Storage) UpdateBookPrice(id int, price float32) models.Book {
 
 	book := bs.GetBookByID(id)

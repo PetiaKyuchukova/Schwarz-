@@ -11,8 +11,6 @@ import (
 )
 
 func main() {
-
-	dsn := "host=localhost user=postgres password=0041129115 dbname=Bookstore port=5432 sslmode=disable TimeZone=Asia/Shanghai"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
@@ -29,7 +27,10 @@ func main() {
 	router.DELETE("/categories/:id", handlers.DeleteCategory)
 
 	router.GET("/books", handlers.GetAllBooks)
-	router.POST("/books", handlers.GetAllBooks)
+	router.GET("/books/:id", handlers.GetBookByID)
+	router.POST("/books", handlers.PostBook)
+	router.PUT("/books/:id", handlers.PutBook)
+	router.DELETE("/books/:id", handlers.DeleteBook)
 
 	router.GET("/authors", handlers.GetAllAuthors)
 	router.GET("/authors/:id", handlers.GetAuthorByID)
