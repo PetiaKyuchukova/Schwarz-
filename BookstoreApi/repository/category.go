@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-func (cs *Storage) CreateCategory(name string) models.Category {
+func (cs *Repository) CreateCategory(name string) models.Category {
 
 	category := models.Category{Name: name}
 	var exists bool
@@ -19,7 +19,7 @@ func (cs *Storage) CreateCategory(name string) models.Category {
 
 	return category
 }
-func (cs *Storage) GetAllCategories() []models.Category {
+func (cs *Repository) GetAllCategories() []models.Category {
 	categories := []models.Category{}
 	cs.Db.Find(&categories)
 
@@ -35,32 +35,32 @@ func (cs *Storage) GetAllCategories() []models.Category {
 	return categories
 
 }
-func (cs *Storage) GetCategoryByID(id int) models.Category {
+func (cs *Repository) GetCategoryByID(id int) models.Category {
 	category := models.Category{}
 	cs.Db.Where("id = ?", id).Find(&category)
 
 	return category
 }
-func (cs *Storage) GetCategoryByName(name string) models.Category {
+func (cs *Repository) GetCategoryByName(name string) models.Category {
 	category := models.Category{}
 	cs.Db.Where("name = ?", name).Find(&category)
 
 	return category
 }
-func (cs *Storage) GetCategoryOfTheBook(book models.Book) models.Category {
+func (cs *Repository) GetCategoryOfTheBook(book models.Book) models.Category {
 	category := models.Category{}
 
 	cs.Db.Where("categories.id  = ?", book.CategoryID).Find(&category).Scan(&category)
 
 	return category
 }
-func (cs *Storage) UpdateCategory(name string, id int) models.Category {
+func (cs *Repository) UpdateCategory(name string, id int) models.Category {
 	category := cs.GetCategoryByID(id)
 	cs.Db.Model(&category).Update("name", name)
 
 	return category
 }
-func (cs *Storage) DeleteCategory(id int) models.Category {
+func (cs *Repository) DeleteCategory(id int) models.Category {
 	category := cs.GetCategoryByID(id)
 	cs.Db.Delete(&models.Category{}, id)
 

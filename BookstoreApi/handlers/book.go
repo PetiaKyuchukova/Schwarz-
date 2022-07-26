@@ -20,7 +20,7 @@ func GetAllBooks(c echo.Context) error {
 	bookAuthorCategoryArr := []models.BookAuthorCategory{}
 
 	for i := 0; i < len(books); i++ {
-		author = myDB.GetAuthorOfTheBook(books[i])
+		author = myDB.GetAuthorById(int(books[i].AuthorID))
 		category = myDB.GetCategoryOfTheBook(books[i])
 
 		bookAuthorCategoryArr = append(bookAuthorCategoryArr, models.BookAuthorCategory{Book: books[i], Category: category, Author: author})

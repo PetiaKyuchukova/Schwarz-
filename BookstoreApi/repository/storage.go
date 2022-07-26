@@ -4,14 +4,14 @@ import (
 	"gorm.io/gorm"
 )
 
-type Storage struct {
+type Repository struct {
 	Db *gorm.DB
 }
 
 var myDB *gorm.DB
 
-func GetDB() *Storage {
-	return &Storage{Db: myDB}
+func GetDB() *Repository {
+	return &Repository{Db: myDB}
 }
 func SetDB(dbToSet *gorm.DB) {
 	myDB = dbToSet

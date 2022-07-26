@@ -2,24 +2,23 @@ package repository
 
 import (
 	"bookstore/models"
-	"log"
 )
 
-func (as *Storage) CreateAuthor(name string, biography string) models.Author {
-	var exists bool
+func (as *Repository) CreateAuthor(name string, biography string) models.Author {
+	//var exists bool
 	author := models.Author{Name: name, Biography: biography}
 
-	as.Db.Model(author).Select("count(*) > 0").Where("name = ?", name).Find(&exists)
+	//as.Db.Model(author).Select("count(*) > 0").Where("name = ?", name).Find(&exists)
 
-	if exists == false {
-		as.Db.Create(&author)
-	} else {
-		log.Print("The author already exists!")
-	}
+	//if exists == false {
+	as.Db.Create(&author)
+	//} else {
+	//	log.Print("The author already exists!")
+	//}
 
 	return author
 }
-func (as *Storage) GetAllAuthors() []models.Author {
+func (as *Repository) GetAllAuthors() []models.Author {
 	authors := []models.Author{}
 	as.Db.Find(&authors)
 
@@ -34,33 +33,28 @@ func (as *Storage) GetAllAuthors() []models.Author {
 
 	return authors
 }
-func (as *Storage) GetAuthorById(id int) models.Author {
+func (as *Repository) GetAuthorById(id int) models.Author {
 	author := models.Author{}
-
 	as.Db.Where("id = ?", id).Find(&author)
 
 	return author
 }
-func (cs *Storage) GetAuthorByName(name string) models.Author {
+func (cs *Repository) GetAuthorByName(name string) models.Author {
 	author := models.Author{}
 	cs.Db.Where("name = ?", name).Find(&author)
 
 	return author
 }
-func (as *Storage) GetAuthorOfTheBook(book models.Book) models.Author {
-	author := models.Author{}
-	as.Db.Where("authors.id  = ?", book.AuthorID).Find(&author).Scan(&author)
-	return author
-}
-func (as *Storage) UpdateAuthor(updatedAuthor models.Author) models.Author {
-	author := as.GetAuthorById(updatedAuthor.ID)
 
-	as.Db.Model(&author).Update("name", updatedAuthor.Name)
-	as.Db.Model(&author).Update("biography", updatedAuthor.Biography)
+func (as *Repository) UpdateAuthor(id int, name string, bio string) models.Author {
+	author := as.GetAuthorById(id)
+
+	as.Db.Model(&author).Where("id", id).Update("name", name)
+	as.Db.Model(&author).Where("id", id).Update("biography", bio)
 
 	return author
 }
-func (as *Storage) DeleteAuthor(id int) models.Author {
+func (as *Repository) DeleteAuthor(id int) models.Author {
 	author := as.GetAuthorById(id)
 	as.Db.Delete(&models.Author{}, id)
 

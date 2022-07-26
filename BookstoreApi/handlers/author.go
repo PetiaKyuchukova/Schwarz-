@@ -49,7 +49,7 @@ func PutAuthor(c echo.Context) error {
 		return err
 	}
 
-	myDB.UpdateAuthor(updateAuthor)
+	myDB.UpdateAuthor(id, updateAuthor.Name, updateAuthor.Biography)
 	author := myDB.GetAuthorById(id)
 
 	return c.JSON(http.StatusOK, author)
