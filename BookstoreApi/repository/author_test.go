@@ -83,17 +83,20 @@ func TestGetAllAuthors(t *testing.T) {
 		t.Errorf("Failed to initialize mock DB: %v", err)
 	}
 
-	rows := sqlmock.NewRows([]string{"id", "name", "biography"}).AddRow(1, "myAuthorTest", "myAuthorTestBio").AddRow(2, "myAuthorTest2", "myAuthorTestBio2")
+	rows := sqlmock.NewRows([]string{"id", "name", "biography"}).AddRow(1, "myAuthorTest", "myAuthorTestBio")
 
 	mock.ExpectQuery(regexp.QuoteMeta(
 		`SELECT * FROM "authors"`)).
+		WillReturnRows(rows)
+	mock.ExpectQuery(regexp.QuoteMeta(
+		`SELECT * FROM "books" WHERE books.author_id  = $1`)).WithArgs(1).
 		WillReturnRows(rows)
 
 	SetDB(mockDB)
 	repo := GetDB()
 	authors := repo.GetAllAuthors()
 	assert.NotEmpty(t, authors)
-	assert.Len(t, authors, 2)
+	assert.Len(t, authors, 1)
 
 }
 func TestGetAuthorByName(t *testing.T) {
@@ -116,23 +119,21 @@ func TestGetAuthorByName(t *testing.T) {
 	assert.NotEmpty(t, authors)
 	assert.Equal(t, expected, authors)
 }
-func TestUpdateAuthor(t *testing.T) {
+
+func TestDeleteAuthor(t *testing.T) {
 	mockDB, mock, err := NewDbMock()
 	if err != nil {
 		t.Errorf("Failed to initialize mock DB: %v", err)
 	}
 
-	sqlmock.NewRows([]string{"id", "name", "biography"}).AddRow(1, "myAuthorTest", "myAuthorTestBio").AddRow(2, "myAuthorTest2", "myAuthorTestBio2")
-	mock.ExpectBegin()
-	mock.ExpectPrepare(
-		`UPDATE "authors"
-		SET "name" =$1
-		WHERE "id" =$2`).ExpectExec().
-		WithArgs("myAuthorTest", 1).
-		WillReturnResult(sqlmock.NewResult(0, 1))
+	query := "DELETE FROM users WHERE id = \\?"
 
+	prep := mock.ExpectPrepare(query)
+	prep.ExpectExec().WithArgs(1).WillReturnResult(sqlmock.NewResult(0, 1))
 	SetDB(mockDB)
 	repo := GetDB()
-	err = repo.UpdateAuthor(1, "myAuthorTest", "myAuthorTestBio")
+	err = repo.DeleteAuthor(1)
+	fmt.Print(err)
 	assert.NoError(t, err)
+
 }

@@ -5,19 +5,24 @@ import (
 	"log"
 )
 
-func (cs *Repository) CreateCategory(name string) models.Category {
+func (cs *Repository) CreateCategory(name string) error {
 
 	category := models.Category{Name: name}
 	var exists bool
-	cs.Db.Model(category).Select("count(*) > 0").Where("name = ?", name).Find(&exists)
+	erro := cs.Db.Model(category).Select("count(*) > 0").Where("name = ?", name).Find(&exists).Error
 
 	if exists == false {
-		cs.Db.Create(&category)
+		err := cs.Db.Create(&category).Error
+		if err != nil {
+			return err
+		} else {
+			return nil
+		}
 	} else {
-		log.Print("Category already exists!")
+		log.Print("The book already exists!")
+		return erro
 	}
 
-	return category
 }
 func (cs *Repository) GetAllCategories() []models.Category {
 	categories := []models.Category{}

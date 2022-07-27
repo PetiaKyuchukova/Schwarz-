@@ -2,6 +2,7 @@ package repository
 
 import (
 	"bookstore/models"
+	"fmt"
 )
 
 func (as *Repository) CreateAuthor(name string, biography string) models.Author {
@@ -50,18 +51,26 @@ func (as *Repository) UpdateAuthor(id int, name string, bio string) error {
 
 	err := as.Db.Model(&models.Author{}).Where("id", id).Update("name", name).Error
 	if err != nil {
+		fmt.Print("err1")
+		return err
+
+	}
+	err = as.Db.Model(&models.Author{}).Where("id", id).Update("biography", bio).Error
+	if err != nil {
+		fmt.Print("err2")
+
 		return err
 	}
-	// err = as.Db.Model(&models.Author{}).Where("id", id).Update("biography", bio).Error
-	// if err != nil {
-	// 	return err
-	// }
+	fmt.Print("nil")
 
 	return nil
 }
-func (as *Repository) DeleteAuthor(id int) models.Author {
-	author := as.GetAuthorById(id)
-	as.Db.Delete(&models.Author{}, id)
+func (as *Repository) DeleteAuthor(id int) error {
+	err := as.Db.Where("1 = 1").Delete(&models.Author{}).Error
+	if err != nil {
+		fmt.Print("err1")
+		return err
 
-	return author
+	}
+	return nil
 }

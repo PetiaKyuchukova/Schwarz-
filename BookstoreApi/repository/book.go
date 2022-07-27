@@ -5,16 +5,22 @@ import (
 	"log"
 )
 
-func (bs *Repository) CreateBook(title string, author int, category int, price float32) {
+func (bs *Repository) CreateBook(title string, author int, category int, price float32) error {
 	var exists bool
 	book := models.Book{Title: title, AuthorID: uint(author), CategoryID: uint(category), Price: price}
 
-	bs.Db.Model(book).Select("count(*) > 0").Where("title = ?", title).Find(&exists)
+	erro := bs.Db.Model(book).Select("count(*) > 0").Where("title = ?", title).Find(&exists).Error
 
 	if exists == false {
-		bs.Db.Create(&book)
+		err := bs.Db.Create(&book).Error
+		if err != nil {
+			return err
+		} else {
+			return nil
+		}
 	} else {
 		log.Print("The book already exists!")
+		return erro
 	}
 
 }
