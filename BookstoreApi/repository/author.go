@@ -46,13 +46,18 @@ func (cs *Repository) GetAuthorByName(name string) models.Author {
 	return author
 }
 
-func (as *Repository) UpdateAuthor(id int, name string, bio string) models.Author {
-	author := as.GetAuthorById(id)
+func (as *Repository) UpdateAuthor(id int, name string, bio string) error {
 
-	as.Db.Model(&author).Where("id", id).Update("name", name)
-	as.Db.Model(&author).Where("id", id).Update("biography", bio)
+	err := as.Db.Model(&models.Author{}).Where("id", id).Update("name", name).Error
+	if err != nil {
+		return err
+	}
+	// err = as.Db.Model(&models.Author{}).Where("id", id).Update("biography", bio).Error
+	// if err != nil {
+	// 	return err
+	// }
 
-	return author
+	return nil
 }
 func (as *Repository) DeleteAuthor(id int) models.Author {
 	author := as.GetAuthorById(id)

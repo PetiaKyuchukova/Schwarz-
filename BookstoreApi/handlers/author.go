@@ -49,7 +49,10 @@ func PutAuthor(c echo.Context) error {
 		return err
 	}
 
-	myDB.UpdateAuthor(id, updateAuthor.Name, updateAuthor.Biography)
+	err := myDB.UpdateAuthor(id, updateAuthor.Name, updateAuthor.Biography)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, "Please provide valid author id")
+	}
 	author := myDB.GetAuthorById(id)
 
 	return c.JSON(http.StatusOK, author)

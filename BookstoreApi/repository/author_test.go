@@ -116,3 +116,23 @@ func TestGetAuthorByName(t *testing.T) {
 	assert.NotEmpty(t, authors)
 	assert.Equal(t, expected, authors)
 }
+func TestUpdateAuthor(t *testing.T) {
+	mockDB, mock, err := NewDbMock()
+	if err != nil {
+		t.Errorf("Failed to initialize mock DB: %v", err)
+	}
+
+	sqlmock.NewRows([]string{"id", "name", "biography"}).AddRow(1, "myAuthorTest", "myAuthorTestBio").AddRow(2, "myAuthorTest2", "myAuthorTestBio2")
+	mock.ExpectBegin()
+	mock.ExpectPrepare(
+		`UPDATE "authors"
+		SET "name" =$1
+		WHERE "id" =$2`).ExpectExec().
+		WithArgs("myAuthorTest", 1).
+		WillReturnResult(sqlmock.NewResult(0, 1))
+
+	SetDB(mockDB)
+	repo := GetDB()
+	err = repo.UpdateAuthor(1, "myAuthorTest", "myAuthorTestBio")
+	assert.NoError(t, err)
+}
