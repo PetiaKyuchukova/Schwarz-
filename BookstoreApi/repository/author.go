@@ -3,6 +3,8 @@ package repository
 import (
 	"bookstore/models"
 	"fmt"
+
+	"gorm.io/gorm"
 )
 
 func (as *Repository) CreateAuthor(name string, biography string) models.Author {
@@ -14,7 +16,8 @@ func (as *Repository) CreateAuthor(name string, biography string) models.Author 
 	//if exists == false {
 	err := as.Db.Create(&author).Error
 	if err != nil {
-		fmt.Print("ERR", err)
+		fmt.Print("ERR IN CREATE    ", err)
+		return models.Author{}
 	}
 	//} else {
 	//	log.Print("The author already exists!")
@@ -70,6 +73,10 @@ func (as *Repository) UpdateAuthor(id int, name string, bio string) error {
 }
 func (as *Repository) DeleteAuthor(id int) error {
 	err := as.Db.Where("id", id).Delete(&models.Author{}).Error
+	sql := as.Db.ToSQL(func(tx *gorm.DB) *gorm.DB {
+		return tx.Where("id", id).Delete(&models.Author{})
+	})
+	fmt.Print("Myyyyyyyyyyyyyyyyyy  SQL   :", sql, "  END  ")
 	if err != nil {
 		fmt.Print("err1")
 		return err

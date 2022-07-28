@@ -31,7 +31,7 @@ func TestCreateAuthor(t *testing.T) {
 		Biography: "testBio",
 	}
 
-	rows := sqlmock.NewRows([]string{"id"}).AddRow(1)
+	rows := sqlmock.NewRows([]string{"id", "name", "biography"}).AddRow(1, author.Name, author.Biography)
 
 	mock.ExpectBegin()
 	mock.ExpectQuery(regexp.QuoteMeta(
@@ -42,6 +42,7 @@ func TestCreateAuthor(t *testing.T) {
 	SetDB(mockDB)
 	repo := GetDB()
 	a := repo.CreateAuthor(author.Name, author.Biography)
+
 	fmt.Println(a)
 	if err != nil {
 		t.Fatal(err)
@@ -125,12 +126,13 @@ func TestDeleteAuthor(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to initialize mock DB: %v", err)
 	}
+	mock.NewRows([]string{"id", "name", "biography"}).AddRow(1, "myAuthorTest", "myAuthorTestBio")
 
-	query := "DELETE FROM authors WHERE id = \\?"
+	//query := "DELETE FROM authors WHERE id = 1"
 	mock.ExpectBegin()
-	prep := mock.ExpectPrepare(query)
-	prep.ExpectExec().WithArgs(1).WillReturnResult(sqlmock.NewResult(0, 1))
+	mock.ExpectQuery(regexp.QuoteMeta("DELETE FROM authors WHERE id = \\$1")).WithArgs(1)
 	mock.ExpectCommit()
+
 	SetDB(mockDB)
 	repo := GetDB()
 	err = repo.DeleteAuthor(1)
