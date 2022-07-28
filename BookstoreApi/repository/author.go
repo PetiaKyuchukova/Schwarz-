@@ -12,7 +12,10 @@ func (as *Repository) CreateAuthor(name string, biography string) models.Author 
 	//as.Db.Model(author).Select("count(*) > 0").Where("name = ?", name).Find(&exists)
 
 	//if exists == false {
-	as.Db.Create(&author)
+	err := as.Db.Create(&author).Error
+	if err != nil {
+		fmt.Print("ERR", err)
+	}
 	//} else {
 	//	log.Print("The author already exists!")
 	//}
