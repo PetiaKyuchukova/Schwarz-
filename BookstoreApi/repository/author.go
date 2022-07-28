@@ -69,7 +69,7 @@ func (as *Repository) UpdateAuthor(id int, name string, bio string) error {
 	return nil
 }
 func (as *Repository) DeleteAuthor(id int) error {
-	err := as.Db.Where("1 = 1").Delete(&models.Author{}).Error
+	err := as.Db.Where("id", id).Delete(&models.Author{}).Error
 	if err != nil {
 		fmt.Print("err1")
 		return err

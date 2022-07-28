@@ -126,10 +126,11 @@ func TestDeleteAuthor(t *testing.T) {
 		t.Errorf("Failed to initialize mock DB: %v", err)
 	}
 
-	query := "DELETE FROM users WHERE id = \\?"
-
+	query := "DELETE FROM authors WHERE id = \\?"
+	mock.ExpectBegin()
 	prep := mock.ExpectPrepare(query)
 	prep.ExpectExec().WithArgs(1).WillReturnResult(sqlmock.NewResult(0, 1))
+	mock.ExpectCommit()
 	SetDB(mockDB)
 	repo := GetDB()
 	err = repo.DeleteAuthor(1)
