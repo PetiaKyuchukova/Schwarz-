@@ -34,7 +34,7 @@ func CreateCategory(c echo.Context) error {
 		return err
 	}
 
-	myDB.CreateCategory(newCategory.Name)
+	myDB.CreateCategory(0, newCategory.Name)
 	newCategory = myDB.GetCategoryByName(newCategory.Name)
 
 	return c.JSON(http.StatusOK, newCategory)

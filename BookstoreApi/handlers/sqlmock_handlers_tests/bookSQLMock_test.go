@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"bookstore/handlers"
 	"bookstore/mock"
 	"bookstore/models"
 	"bookstore/repository"
@@ -28,7 +29,7 @@ func TestGetAllBooks(t *testing.T) {
 
 	res := rec.Result()
 	defer res.Body.Close()
-	mockDB, mock, err := mock.NewDbMock()
+	mockDB, mock, err := mock.NewSQLMock()
 	if err != nil {
 		t.Errorf("Failed to initialize mock DB: %v", err)
 	}
@@ -68,7 +69,7 @@ func TestGetAllBooks(t *testing.T) {
 	repository.SetDB(mockDB)
 	repository.GetDB().CreateBook(book.Title, int(book.AuthorID), int(book.CategoryID), book.Price)
 
-	if assert.NoError(t, GetAllBooks(ctx)) {
+	if assert.NoError(t, handlers.GetAllBooks(ctx)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, expectedBooks, rec.Body.String())
 	}
@@ -86,7 +87,7 @@ func TestGetBookByID(t *testing.T) {
 	res := rec.Result()
 
 	defer res.Body.Close()
-	mockDB, mock, err := mock.NewDbMock()
+	mockDB, mock, err := mock.NewSQLMock()
 	if err != nil {
 		t.Errorf("Failed to initialize mock DB: %v", err)
 	}
@@ -105,8 +106,8 @@ func TestGetBookByID(t *testing.T) {
 		WillReturnRows(rows)
 
 	repository.SetDB(mockDB)
-	//db := repository.GetDB()
-	if assert.NoError(t, GetBookByID(ctx)) {
+
+	if assert.NoError(t, handlers.GetBookByID(ctx)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, expectedBook, rec.Body.String())
 	}

@@ -35,7 +35,7 @@ func CreateAuthor(c echo.Context) error {
 		return err
 	}
 
-	myDB.CreateAuthor(newAuthor.Name, newAuthor.Biography)
+	myDB.CreateAuthor(0, newAuthor.Name, newAuthor.Biography)
 	newAuthor = myDB.GetAuthorByName(newAuthor.Name)
 	return c.JSON(http.StatusOK, newAuthor)
 
@@ -62,7 +62,8 @@ func DeleteAuthor(c echo.Context) error {
 
 	id, _ := strconv.Atoi(c.Param("id"))
 	myDB.DeleteBooksOfTheAuthor(id)
-	deletedAuthor := myDB.DeleteAuthor(id)
+	deletedAuthor := myDB.GetAuthorById(id)
+	myDB.DeleteAuthor(id)
 
 	return c.JSON(http.StatusOK, deletedAuthor)
 

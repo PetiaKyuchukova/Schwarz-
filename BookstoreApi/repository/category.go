@@ -5,9 +5,12 @@ import (
 	"log"
 )
 
-func (cs *Repository) CreateCategory(name string) error {
+func (cs *Repository) CreateCategory(idExist int, name string) error {
 
 	category := models.Category{Name: name}
+	if idExist == 1 {
+		category.ID = idExist
+	}
 	var exists bool
 	erro := cs.Db.Model(category).Select("count(*) > 0").Where("name = ?", name).Find(&exists).Error
 

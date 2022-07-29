@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"bookstore/handlers"
 	"bookstore/mock"
 	"bookstore/models"
 	"bookstore/repository"
@@ -8,7 +9,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"regexp"
-	"strings"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -16,9 +16,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var expextedAuthors = `{"authors":[{"ID":1,"name":"testname","biography":"myAuthorTestBio"},{"ID":2,"name":"myAuthorTest2","biography":"myAuthorTestBio2"}]}
+var expectedAuthors = `{"authors":[{"ID":1,"name":"testname","biography":"myAuthorTestBio"},{"ID":2,"name":"myAuthorTest2","biography":"myAuthorTestBio2"}]}
 `
-var expectedAuthor = `{"ID":1,"name":"myAuthorTest","biography":"myAuthorTestBio"}
+var expectedAuthor = `{"ID":0,"name":"myAuthorTest","biography":"myAuthorTestBio"}
 `
 
 func TestGetAllAuthors(t *testing.T) {
@@ -30,7 +30,7 @@ func TestGetAllAuthors(t *testing.T) {
 
 	res := rec.Result()
 	defer res.Body.Close()
-	mockDB, mock, err := mock.NewDbMock()
+	mockDB, mock, err := mock.NewSQLMock()
 	if err != nil {
 		t.Errorf("Failed to initialize mock DB: %v", err)
 	}
@@ -50,19 +50,16 @@ func TestGetAllAuthors(t *testing.T) {
 	mock.ExpectQuery(regexp.QuoteMeta(
 		`SELECT * FROM "authors" `)).
 		WillReturnRows(rows)
-	// mock.ExpectQuery(regexp.QuoteMeta(
-	// 	`SELECT * FROM "books" WHERE author_id = $1`)).WithArgs(1).
-	// 	WillReturnRows(books)
 
 	repository.SetDB(mockDB)
 	db := repository.GetDB()
-	db.CreateAuthor("AuthorName", "AuthorBiography")
+	db.CreateAuthor(0, "AuthorName", "AuthorBiography")
 	aut := db.GetAuthorByName("testName")
 	fmt.Print("HERE IS MY AUT", aut)
 
-	if assert.NoError(t, GetAllAuthors(ctx)) {
+	if assert.NoError(t, handlers.GetAllAuthors(ctx)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, expextedAuthors, rec.Body.String())
+		assert.Equal(t, expectedAuthors, rec.Body.String())
 	}
 
 }
@@ -78,7 +75,7 @@ func TestGetAuthorByID(t *testing.T) {
 	res := rec.Result()
 
 	defer res.Body.Close()
-	mockDB, mock, err := mock.NewDbMock()
+	mockDB, mock, err := mock.NewSQLMock()
 	if err != nil {
 		t.Errorf("Failed to initialize mock DB: %v", err)
 	}
@@ -93,51 +90,9 @@ func TestGetAuthorByID(t *testing.T) {
 
 	repository.SetDB(mockDB)
 	//db := repository.GetDB()
-	if assert.NoError(t, GetAuthorByID(ctx)) {
+	if assert.NoError(t, handlers.GetAuthorByID(ctx)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, expectedAuthor, rec.Body.String())
 	}
 
-}
-func TestPostAuthor(t *testing.T) {
-	e := echo.New()
-	req := httptest.NewRequest(http.MethodGet, "http://localhost:2000/authors", strings.NewReader(expectedAuthor))
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	rec := httptest.NewRecorder()
-	ctx := e.NewContext(req, rec)
-
-	res := rec.Result()
-	defer res.Body.Close()
-	mockDB, mock, err := mock.NewDbMock()
-	if err != nil {
-		t.Errorf("Failed to initialize mock DB: %v", err)
-	}
-	author := models.Author{
-		Name:      "myAuthorTest",
-		Biography: "myAuthorTestBio",
-	}
-
-	rows := sqlmock.NewRows([]string{"id", "name", "biography"}).AddRow(1, "myAuthorTest", "myAuthorTestBio")
-	//row := sqlmock.NewRows([]string{"id"}).AddRow(1)
-
-	//mock.ExpectBegin()
-	mockDB.Begin()
-	mock.ExpectQuery(regexp.QuoteMeta(
-		`INSERT INTO "authors" ("name","biography") VALUES ($1,$2)`))
-	mock.ExpectCommit()
-
-	mock.ExpectBegin()
-	mock.ExpectQuery(regexp.QuoteMeta(
-		`SELECT * FROM "authors" WHERE name = $1`)).
-		WithArgs("myAuthorTest").WillReturnRows(rows)
-	mock.ExpectCommit()
-
-	repository.SetDB(mockDB)
-	db := repository.GetDB()
-	db.CreateAuthor(author.Name, author.Biography)
-
-	if assert.NoError(t, CreateAuthor(ctx)) {
-		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, expectedAuthor, rec.Body.String())
-	}
 }

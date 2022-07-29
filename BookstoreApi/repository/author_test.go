@@ -41,7 +41,7 @@ func TestCreateAuthor(t *testing.T) {
 
 	SetDB(mockDB)
 	repo := GetDB()
-	a := repo.CreateAuthor(author.Name, author.Biography)
+	a := repo.CreateAuthor(0, author.Name, author.Biography)
 
 	fmt.Println(a)
 	if err != nil {
@@ -119,24 +119,4 @@ func TestGetAuthorByName(t *testing.T) {
 	expected := models.Author{ID: 1, Name: "myAuthorTest", Biography: "myAuthorTestBio"}
 	assert.NotEmpty(t, authors)
 	assert.Equal(t, expected, authors)
-}
-
-func TestDeleteAuthor(t *testing.T) {
-	mockDB, mock, err := NewDbMock()
-	if err != nil {
-		t.Errorf("Failed to initialize mock DB: %v", err)
-	}
-	mock.NewRows([]string{"id", "name", "biography"}).AddRow(1, "myAuthorTest", "myAuthorTestBio")
-
-	//query := "DELETE FROM authors WHERE id = 1"
-	mock.ExpectBegin()
-	mock.ExpectQuery(regexp.QuoteMeta("DELETE FROM authors WHERE id = \\$1")).WithArgs(1)
-	mock.ExpectCommit()
-
-	SetDB(mockDB)
-	repo := GetDB()
-	err = repo.DeleteAuthor(1)
-	fmt.Print(err)
-	assert.NoError(t, err)
-
 }

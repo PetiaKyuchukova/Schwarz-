@@ -3,25 +3,28 @@ package repository
 import (
 	"bookstore/models"
 	"fmt"
-
-	"gorm.io/gorm"
+	"log"
 )
 
-func (as *Repository) CreateAuthor(name string, biography string) models.Author {
-	//var exists bool
+func (as *Repository) CreateAuthor(idExist int, name string, biography string) models.Author {
+	var exists bool
 	author := models.Author{Name: name, Biography: biography}
-
-	//as.Db.Model(author).Select("count(*) > 0").Where("name = ?", name).Find(&exists)
-
-	//if exists == false {
-	err := as.Db.Create(&author).Error
-	if err != nil {
-		fmt.Print("ERR IN CREATE    ", err)
-		return models.Author{}
+	if idExist == 1 {
+		author.ID = idExist
 	}
-	//} else {
-	//	log.Print("The author already exists!")
-	//}
+
+	as.Db.Model(author).Select("count(*) > 0").Where("name = ?", name).Find(&exists)
+
+	if exists == false {
+
+		err := as.Db.Create(&author).Error
+		if err != nil {
+			fmt.Print("ERR IN CREATE    ", err)
+			return models.Author{}
+		}
+	} else {
+		log.Print("The author already exists!")
+	}
 
 	return author
 }
@@ -67,20 +70,10 @@ func (as *Repository) UpdateAuthor(id int, name string, bio string) error {
 
 		return err
 	}
-	fmt.Print("nil")
 
 	return nil
 }
-func (as *Repository) DeleteAuthor(id int) error {
-	err := as.Db.Where("id", id).Delete(&models.Author{}).Error
-	sql := as.Db.ToSQL(func(tx *gorm.DB) *gorm.DB {
-		return tx.Where("id", id).Delete(&models.Author{})
-	})
-	fmt.Print("Myyyyyyyyyyyyyyyyyy  SQL   :", sql, "  END  ")
-	if err != nil {
-		fmt.Print("err1")
-		return err
+func (as *Repository) DeleteAuthor(id int) {
+	as.Db.Where("id", id).Delete(&models.Author{})
 
-	}
-	return nil
 }

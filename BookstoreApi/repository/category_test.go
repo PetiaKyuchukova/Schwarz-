@@ -32,7 +32,7 @@ func TestCreateBCategory(t *testing.T) {
 
 	SetDB(mockDB)
 	repo := GetDB()
-	err = repo.CreateCategory(category.Name)
+	err = repo.CreateCategory(0, category.Name)
 	//fmt.Println(a)
 	if err != nil {
 		t.Fatal(err)

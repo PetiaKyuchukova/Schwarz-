@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"bookstore/handlers"
 	"bookstore/mock"
 	"bookstore/models"
 	"bookstore/repository"
@@ -28,7 +29,7 @@ func TestGetAllCategories(t *testing.T) {
 
 	res := rec.Result()
 	defer res.Body.Close()
-	mockDB, mock, err := mock.NewDbMock()
+	mockDB, mock, err := mock.NewSQLMock()
 	if err != nil {
 		t.Errorf("Failed to initialize mock DB: %v", err)
 	}
@@ -47,7 +48,7 @@ func TestGetAllCategories(t *testing.T) {
 
 	repository.SetDB(mockDB)
 
-	if assert.NoError(t, GetAllCategories(ctx)) {
+	if assert.NoError(t, handlers.GetAllCategories(ctx)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, expectedCategories, rec.Body.String())
 	}
@@ -64,7 +65,7 @@ func TestGetCategoriesByID(t *testing.T) {
 	res := rec.Result()
 
 	defer res.Body.Close()
-	mockDB, mock, err := mock.NewDbMock()
+	mockDB, mock, err := mock.NewSQLMock()
 	if err != nil {
 		t.Errorf("Failed to initialize mock DB: %v", err)
 	}
@@ -81,8 +82,8 @@ func TestGetCategoriesByID(t *testing.T) {
 		WillReturnRows(categoryRow)
 
 	repository.SetDB(mockDB)
-	//db := repository.GetDB()
-	if assert.NoError(t, GetCategoryByID(ctx)) {
+
+	if assert.NoError(t, handlers.GetCategoryByID(ctx)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, expectedCategory, rec.Body.String())
 	}
