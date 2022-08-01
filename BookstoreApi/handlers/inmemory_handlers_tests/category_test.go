@@ -136,7 +136,6 @@ func TestPostCategory(t *testing.T) {
 
 	repository.SetDB(mockDB)
 
-	///fmt.Print("actual     ", rec.Body.String())
 	if assert.NoError(t, handlers.CreateCategory(ctx)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, expectedCategory, rec.Body.String())

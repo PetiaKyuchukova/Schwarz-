@@ -137,7 +137,6 @@ func TestPostBook(t *testing.T) {
 
 	repository.SetDB(mockDB)
 
-	///fmt.Print("actual     ", rec.Body.String())
 	if assert.NoError(t, handlers.CreateBook(ctx)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, expectedBook, rec.Body.String())

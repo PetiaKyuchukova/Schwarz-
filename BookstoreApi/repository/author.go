@@ -2,7 +2,6 @@ package repository
 
 import (
 	"bookstore/models"
-	"fmt"
 	"log"
 )
 
@@ -16,12 +15,7 @@ func (as *Repository) CreateAuthor(idExist int, name string, biography string) m
 	as.Db.Model(author).Select("count(*) > 0").Where("name = ?", name).Find(&exists)
 
 	if exists == false {
-
-		err := as.Db.Create(&author).Error
-		if err != nil {
-			fmt.Print("ERR IN CREATE    ", err)
-			return models.Author{}
-		}
+		as.Db.Create(&author)
 	} else {
 		log.Print("The author already exists!")
 	}
@@ -60,14 +54,11 @@ func (as *Repository) UpdateAuthor(id int, name string, bio string) error {
 
 	err := as.Db.Model(&models.Author{}).Where("id", id).Update("name", name).Error
 	if err != nil {
-		fmt.Print("err1")
 		return err
 
 	}
 	err = as.Db.Model(&models.Author{}).Where("id", id).Update("biography", bio).Error
 	if err != nil {
-		fmt.Print("err2")
-
 		return err
 	}
 
