@@ -23,7 +23,8 @@ func NewInmemoryMock() (*gorm.DB, error) {
 		id SERIAL PRIMARY KEY,
 	 	title varchar NOT NULL,
 		author_id INT REFERENCES authors(id),
-		category_id INT REFERENCES categories(id)
+		category_id INT REFERENCES categories(id),
+		price float
 	   );`)
 
 	return mockDB, err

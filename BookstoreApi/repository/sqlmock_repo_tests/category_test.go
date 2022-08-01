@@ -2,6 +2,7 @@ package repository
 
 import (
 	"bookstore/models"
+	"bookstore/repository"
 	"fmt"
 	"regexp"
 	"testing"
@@ -30,8 +31,8 @@ func TestCreateBCategory(t *testing.T) {
 
 	mock.ExpectCommit()
 
-	SetDB(mockDB)
-	repo := GetDB()
+	repository.SetDB(mockDB)
+	repo := repository.GetDB()
 	err = repo.CreateCategory(0, category.Name)
 	//fmt.Println(a)
 	if err != nil {
@@ -59,8 +60,8 @@ func TestGetAllCategories(t *testing.T) {
 		`SELECT * FROM "books" WHERE books.category_id  = $1`)).
 		WillReturnRows(books)
 
-	SetDB(mockDB)
-	repo := GetDB()
+	repository.SetDB(mockDB)
+	repo := repository.GetDB()
 	authors := repo.GetAllCategories()
 	assert.NotEmpty(t, authors)
 	assert.Len(t, authors, 1)
@@ -79,8 +80,8 @@ func TestGetById(t *testing.T) {
 		WithArgs(1).
 		WillReturnRows(rows)
 
-	SetDB(mockDB)
-	repo := GetDB()
+	repository.SetDB(mockDB)
+	repo := repository.GetDB()
 	category := repo.GetCategoryByID(1)
 	fmt.Println(category)
 	if err != nil {
@@ -102,8 +103,8 @@ func TestGetCategoryOfTheBook(t *testing.T) {
 		WithArgs("test").
 		WillReturnRows(rows)
 
-	SetDB(mockDB)
-	repo := GetDB()
+	repository.SetDB(mockDB)
+	repo := repository.GetDB()
 	category := repo.GetCategoryByName("test")
 	fmt.Println(category)
 	if err != nil {

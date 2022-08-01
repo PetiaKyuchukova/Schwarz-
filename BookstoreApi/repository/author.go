@@ -75,5 +75,4 @@ func (as *Repository) UpdateAuthor(id int, name string, bio string) error {
 }
 func (as *Repository) DeleteAuthor(id int) {
 	as.Db.Where("id", id).Delete(&models.Author{})
-
 }

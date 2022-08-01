@@ -13,9 +13,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var expectedBooks = `{"books":[{"Book":{"ID":1,"title":"testBook","author":1,"category":1,"price":12},"Author":{"ID":0},"Category":{}}]}
+var expectedBooks = `{"books":[{"Book":{"ID":0,"title":"testBook","author":1,"category":1,"price":12},"Author":{"ID":0},"Category":{}}]}
 `
-var expectedBook = `{"ID":1,"title":"testBook","author":{"ID":0},"category":{},"price":12}
+var expectedBook = `{"ID":0,"title":"testBook","author":{"ID":0},"category":{},"price":12}
+`
+var expectedReqBook = `{"ID":1,"title":"testBook","author":1,"category":1,"price":12}
 `
 
 func TestGetAllBooks(t *testing.T) {
@@ -34,21 +36,20 @@ func TestGetAllBooks(t *testing.T) {
 
 	repository.SetDB(mockDB)
 	db := repository.GetDB()
-	db.CreateCategory(1, "myCategory")
-
-	if assert.NoError(t, handlers.GetAllCategories(ctx)) {
+	db.CreateBook(0, "testBook", 1, 1, 12)
+	if assert.NoError(t, handlers.GetAllBooks(ctx)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, expectedCategories, rec.Body.String())
+		assert.Equal(t, expectedBooks, rec.Body.String())
 	}
 
 }
 func TestGetBookByID(t *testing.T) {
 	e := echo.New()
-	req := httptest.NewRequest(http.MethodGet, "http://localhost:2000/category/:id", http.NoBody)
+	req := httptest.NewRequest(http.MethodGet, "http://localhost:2000/books/:id", http.NoBody)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	ctx := e.NewContext(req, rec)
-	ctx.SetPath("/api/category/:id")
+	ctx.SetPath("/api/books/:id")
 	ctx.SetParamNames("id")
 	ctx.SetParamValues("1")
 	res := rec.Result()
@@ -60,21 +61,21 @@ func TestGetBookByID(t *testing.T) {
 	}
 	repository.SetDB(mockDB)
 	db := repository.GetDB()
-	db.CreateCategory(1, "myCategory")
+	db.CreateBook(1, "testBook", 1, 1, 12)
 
-	if assert.NoError(t, handlers.GetCategoryByID(ctx)) {
+	if assert.NoError(t, handlers.GetBookByID(ctx)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, expectedCategory, rec.Body.String())
+		assert.Equal(t, expectedBook, rec.Body.String())
 	}
 
 }
 func TestUpdateBook(t *testing.T) {
 	e := echo.New()
-	req := httptest.NewRequest(http.MethodPatch, "http://localhost:2000/category/:id", strings.NewReader(expectedCategory))
+	req := httptest.NewRequest(http.MethodPatch, "http://localhost:2000/books/:id", strings.NewReader(expectedReqBook))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	ctx := e.NewContext(req, rec)
-	ctx.SetPath("category/:id")
+	ctx.SetPath("books/:id")
 	ctx.SetParamNames("id")
 	ctx.SetParamValues("1")
 
@@ -86,21 +87,21 @@ func TestUpdateBook(t *testing.T) {
 		t.Errorf("Failed to initialize mock DB: %v", err)
 	}
 	repository.SetDB(mockDB)
-	repository.GetDB().CreateCategory(1, "myCategory1")
+	repository.GetDB().CreateBook(1, "testBook", 1, 1, 13)
 
-	if assert.NoError(t, handlers.PutCategory(ctx)) {
+	if assert.NoError(t, handlers.PutBook(ctx)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, expectedCategory, rec.Body.String())
+		assert.Equal(t, expectedBook, rec.Body.String())
 	}
 
 }
 func TestDeleteBook(t *testing.T) {
 	e := echo.New()
-	req := httptest.NewRequest(http.MethodDelete, "http://localhost:2000/category/:id", http.NoBody)
+	req := httptest.NewRequest(http.MethodDelete, "http://localhost:2000/books/:id", http.NoBody)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	ctx := e.NewContext(req, rec)
-	ctx.SetPath("category/:id")
+	ctx.SetPath("books/:id")
 	ctx.SetParamNames("id")
 	ctx.SetParamValues("1")
 
@@ -112,17 +113,17 @@ func TestDeleteBook(t *testing.T) {
 		t.Errorf("Failed to initialize mock DB: %v", err)
 	}
 	repository.SetDB(mockDB)
-	repository.GetDB().CreateCategory(1, "myCategory")
+	repository.GetDB().CreateBook(1, "testBook", 1, 1, 12)
 
-	if assert.NoError(t, handlers.DeleteCategory(ctx)) {
+	if assert.NoError(t, handlers.DeleteBook(ctx)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, expectedCategory, rec.Body.String())
+		assert.Equal(t, expectedBook, rec.Body.String())
 	}
 
 }
 func TestPostBook(t *testing.T) {
 	e := echo.New()
-	req := httptest.NewRequest(http.MethodGet, "http://localhost:2000/category", strings.NewReader(expectedCategory))
+	req := httptest.NewRequest(http.MethodGet, "http://localhost:2000/books", strings.NewReader(expectedReqBook))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	ctx := e.NewContext(req, rec)
@@ -137,8 +138,8 @@ func TestPostBook(t *testing.T) {
 	repository.SetDB(mockDB)
 
 	///fmt.Print("actual     ", rec.Body.String())
-	if assert.NoError(t, handlers.CreateCategory(ctx)) {
+	if assert.NoError(t, handlers.CreateBook(ctx)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, expectedCategory, rec.Body.String())
+		assert.Equal(t, expectedBook, rec.Body.String())
 	}
 }

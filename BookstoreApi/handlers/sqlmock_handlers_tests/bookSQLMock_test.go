@@ -67,7 +67,7 @@ func TestGetAllBooks(t *testing.T) {
 		WillReturnRows(categoryRow)
 
 	repository.SetDB(mockDB)
-	repository.GetDB().CreateBook(book.Title, int(book.AuthorID), int(book.CategoryID), book.Price)
+	repository.GetDB().CreateBook(0, book.Title, int(book.AuthorID), int(book.CategoryID), book.Price)
 
 	if assert.NoError(t, handlers.GetAllBooks(ctx)) {
 		assert.Equal(t, http.StatusOK, rec.Code)

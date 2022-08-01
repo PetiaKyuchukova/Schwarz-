@@ -2,6 +2,7 @@ package repository
 
 import (
 	"bookstore/models"
+	"bookstore/repository"
 	"fmt"
 	"regexp"
 	"testing"
@@ -33,9 +34,9 @@ func TestCreateBook(t *testing.T) {
 
 	mock.ExpectCommit()
 
-	SetDB(mockDB)
-	repo := GetDB()
-	err = repo.CreateBook(book.Title, int(book.AuthorID), int(book.CategoryID), book.Price)
+	repository.SetDB(mockDB)
+	repo := repository.GetDB()
+	err = repo.CreateBook(0, book.Title, int(book.AuthorID), int(book.CategoryID), book.Price)
 	//fmt.Println(a)
 	if err != nil {
 		t.Fatal(err)
@@ -45,6 +46,7 @@ func TestCreateBook(t *testing.T) {
 		t.Errorf("Test Create User: %v", err)
 	}
 }
+
 func TestGetAllBooks(t *testing.T) {
 	mockDB, mock, err := NewDbMock()
 	if err != nil {
@@ -57,8 +59,8 @@ func TestGetAllBooks(t *testing.T) {
 		`SELECT * FROM "books"`)).
 		WillReturnRows(rows)
 
-	SetDB(mockDB)
-	repo := GetDB()
+	repository.SetDB(mockDB)
+	repo := repository.GetDB()
 	authors := repo.GetAllBooks()
 	assert.NotEmpty(t, authors)
 	assert.Len(t, authors, 1)
@@ -77,8 +79,8 @@ func TestGetBookById(t *testing.T) {
 		WithArgs(1).
 		WillReturnRows(rows)
 
-	SetDB(mockDB)
-	repo := GetDB()
+	repository.SetDB(mockDB)
+	repo := repository.GetDB()
 	user := repo.GetBookByID(1)
 	fmt.Println(user)
 	if err != nil {
@@ -102,8 +104,8 @@ func TestGetBooksByAuthorId(t *testing.T) {
 		WithArgs(1).
 		WillReturnRows(rows)
 
-	SetDB(mockDB)
-	repo := GetDB()
+	repository.SetDB(mockDB)
+	repo := repository.GetDB()
 	user := repo.GetBooksByAuthorId(1)
 	fmt.Println(user)
 	if err != nil {
@@ -127,8 +129,8 @@ func TestGetBookByTitle(t *testing.T) {
 		WithArgs("testBook").
 		WillReturnRows(rows)
 
-	SetDB(mockDB)
-	repo := GetDB()
+	repository.SetDB(mockDB)
+	repo := repository.GetDB()
 	user := repo.GetBookByTitle("testBook")
 	fmt.Println(user)
 	if err != nil {

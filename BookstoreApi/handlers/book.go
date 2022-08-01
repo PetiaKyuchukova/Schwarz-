@@ -47,7 +47,7 @@ func CreateBook(c echo.Context) error {
 	if err := c.Bind(&newBook); err != nil {
 		return err
 	}
-	myDB.CreateBook(newBook.Title, int(newBook.AuthorID), int(newBook.CategoryID), newBook.Price)
+	myDB.CreateBook(0, newBook.Title, int(newBook.AuthorID), int(newBook.CategoryID), newBook.Price)
 	newBook = myDB.GetBookByTitle(newBook.Title)
 
 	return c.JSON(http.StatusOK, myDB.SetBookDetailInfo(newBook))

@@ -5,9 +5,12 @@ import (
 	"log"
 )
 
-func (bs *Repository) CreateBook(title string, author int, category int, price float32) error {
+func (bs *Repository) CreateBook(idExist int, title string, author int, category int, price float32) error {
 	var exists bool
 	book := models.Book{Title: title, AuthorID: uint(author), CategoryID: uint(category), Price: price}
+	if idExist == 1 {
+		book.ID = idExist
+	}
 
 	erro := bs.Db.Model(book).Select("count(*) > 0").Where("title = ?", title).Find(&exists).Error
 
